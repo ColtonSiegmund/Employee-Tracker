@@ -1,6 +1,7 @@
-const inquirer = require('inquirer');
+const { prompt } = require('inquirer');
 const fs = require('fs');
 const mysql = require('mysql2');
+require('console.table');
 
 const db = mysql.createConnection({
   host: 'localhost',
@@ -12,13 +13,13 @@ const db = mysql.createConnection({
 appStart = () => {
   console.log("Welcome to Employee Manager");
   firstPrompt()
-}
+};
 
 function firstPrompt(){
-  inquirer
-  .createPromptModule([
+  prompt([
     {
-      type: 'select',
+      type: 'list',
+      name: "choice",
       message:'Which would you like to do?',
       choices: [
         {
@@ -50,8 +51,9 @@ function firstPrompt(){
             value: "UPDATE_EMPLOYEE"
           } 
         ]
-    },
-  ]).then (res => {
+    }
+  ])
+  .then (res => {
     let choice = res.choice;
     switch (choice) {
       case "VIEW_ALL_DEPARTMENT":
@@ -74,7 +76,113 @@ function firstPrompt(){
                   break;
                   case "UPDATE_EMPLOYEE":
                     updateEmployee();
-                    break;
+                    
     }
   })
+};
+
+function viewDepartments () {
+    const sql = `SELECT * FROM department`;
+    
+    db.query(sql, (err, row) => {
+      if (err) {
+        console.log(err);
+      }
+      console.table(row);
+      firstPrompt();
+    }) 
+};
+
+// function viewRoles () {
+//   const sql = `SELECT * FROM role`;
+  
+//   db.query(sql, (err, rows) => {
+//     if (err) {
+//       res.status(500).json({ error: err.message });
+//       return;
+//     }
+//     res.json({
+//       message: 'success',
+//       data: rows
+//     })
+//   }) 
+// };
+
+// function viewEmployee () {
+//   const sql = `SELECT * FROM employee`;
+  
+//   db.query(sql, (err, rows) => {
+//     if (err) {
+//       res.status(500).json({ error: err.message });
+//       return;
+//     }
+//     res.json({
+//       message: 'success',
+//       data: rows
+//     })
+//   }) 
+// };
+
+function addEmployee() {
+  // Run a query to retrieve the roles from the database
+  let roles = [];
+  let managers = [];
+  // Run a query to retrieve managers from the database
+  const sql = `SELECT role.id, role.title FROM role;`;
+  db.query(sql, (err, row) => {
+    console.log(row);
+    roles = row.map(({id, title}) => {
+      return { name: title, value: id};
+    })
+    const sql2 = `SELECT * FROM employee WHERE manager_id IS NOT NULL;`;
+    db.query(sql2, (err, row) => {
+      console.log(row);
+      managers = row.map(({id, first_name}) => {
+        return { name: first_name, value: id };
+      })
+    managers.push("None");
+    // From here, you want to take the ID and the title, and create an array of objects
+    // [{name: TITLE, value: ID}]
+    prompt([
+      {
+        type: 'input',
+        name: 'first_name',
+        message: 'What is the employees first name?'
+      },
+      {
+        type: 'input',
+        name: 'last_name',
+        message: 'What is the employees last name?'
+      },
+      {
+        type: 'list',
+        name: 'role_id',
+        message: 'What role does the employee belong to?',
+        choices: roles
+      },
+      {
+        type: 'list',
+        name: 'manager_id',
+        message: 'Who is the employees manager?',
+        choices: managers
+      }
+    ])
+    let response = prompt.response;
+    addEmployeeDB(response);
+    })
+  });
 }
+  function addEmployeeDB(response) {
+    const sql3 = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+    VALUES (?)`;
+    db.query(sql3, response, (err, row) => {
+      if (err) {
+        console.log(err);
+  }
+    });
+  }
+  // Run your prompts to allow the user to input first name, last name, role
+
+
+
+appStart();
