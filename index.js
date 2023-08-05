@@ -117,6 +117,28 @@ function viewEmployee () {
   }) 
 };
 
+function addDepartment() {
+    prompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: 'What is the name of the department?'
+      }
+    ])
+    .then (answer => {
+      const params = [answer.name];
+      const sql = `INSERT INTO department ( name ) VALUES (?)`;
+      db.query(sql, params, (err, row) => {
+        if (err) {
+          console.log(err);
+    }
+    console.table("\nDepartment added to database!\n")
+    appStart();
+      });
+    })
+    };
+
+
 function addEmployee() {
   let roles = [];
   let managers = [];
