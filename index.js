@@ -93,56 +93,45 @@ function viewDepartments () {
     }) 
 };
 
-// function viewRoles () {
-//   const sql = `SELECT * FROM role`;
-  
-//   db.query(sql, (err, rows) => {
-//     if (err) {
-//       res.status(500).json({ error: err.message });
-//       return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: rows
-//     })
-//   }) 
-// };
+function viewRoles () {
+  const sql = `SELECT * FROM role`;
+    
+  db.query(sql, (err, row) => {
+    if (err) {
+      console.log(err);
+    }
+    console.table(row);
+    firstPrompt();
+  }) 
+};
 
-// function viewEmployee () {
-//   const sql = `SELECT * FROM employee`;
-  
-//   db.query(sql, (err, rows) => {
-//     if (err) {
-//       res.status(500).json({ error: err.message });
-//       return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: rows
-//     })
-//   }) 
-// };
+function viewEmployee () {
+  const sql = `SELECT * FROM employee`;
+    
+  db.query(sql, (err, row) => {
+    if (err) {
+      console.log(err);
+    }
+    console.table(row);
+    firstPrompt();
+  }) 
+};
 
 function addEmployee() {
-  // Run a query to retrieve the roles from the database
   let roles = [];
   let managers = [];
-  // Run a query to retrieve managers from the database
   const sql = `SELECT role.id, role.title FROM role;`;
   db.query(sql, (err, row) => {
-    console.log(row);
     roles = row.map(({id, title}) => {
       return { name: title, value: id};
     })
     const sql2 = `SELECT * FROM employee WHERE manager_id IS NOT NULL;`;
     db.query(sql2, (err, row) => {
-      console.log(row);
       managers = row.map(({id, first_name}) => {
         return { name: first_name, value: id };
       })
     managers.push("None");
-    // From here, you want to take the ID and the title, and create an array of objects
-    // [{name: TITLE, value: ID}]
+
     prompt([
       {
         type: 'input',
@@ -167,21 +156,21 @@ function addEmployee() {
         choices: managers
       }
     ])
-    let response = prompt.response;
-    addEmployeeDB(response);
+    .then (answer => {
+      const params = [answer.first_name, answer.last_name, answer.role_id, answer.manager_id];
+      const sql3 = `INSERT INTO employee (first_name, last_name, role_id, manager_id ) VALUES (?, ?, ?, ?)`;
+      db.query(sql3, params, (err, row) => {
+        if (err) {
+          console.log(err);
+    }
+    console.table("\nEmployee added to database!\n")
+    appStart();
+      });
+    })
     })
   });
 }
-  function addEmployeeDB(response) {
-    const sql3 = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
-    VALUES (?)`;
-    db.query(sql3, response, (err, row) => {
-      if (err) {
-        console.log(err);
-  }
-    });
-  }
-  // Run your prompts to allow the user to input first name, last name, role
+
 
 
 
