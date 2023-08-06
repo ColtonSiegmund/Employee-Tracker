@@ -9,12 +9,14 @@ const db = mysql.createConnection({
   password: '11111111',
   database: 'employees_db',
 });
-
+// ============================== Function to start application =========================
 appStart = () => {
-  console.log("Welcome to Employee Manager");
+  console.table('==================================================================');
+  console.table("Welcome to Employee Manager");
+  console.table('==================================================================');
   firstPrompt()
 };
-
+// ============================== Function to choose what you want to do =========================
 function firstPrompt(){
   prompt([
     {
@@ -80,7 +82,7 @@ function firstPrompt(){
     }
   })
 };
-
+// ============================== Function to view departments =========================
 function viewDepartments () {
     const sql = `SELECT * FROM department`;
     
@@ -88,11 +90,13 @@ function viewDepartments () {
       if (err) {
         console.log(err);
       }
+      console.table('==================================================================');
       console.table(row);
+      console.table('==================================================================');
       firstPrompt();
     }) 
 };
-
+// ============================== Function to view roles =========================
 function viewRoles () {
   const sql = `SELECT * FROM role`;
     
@@ -100,11 +104,13 @@ function viewRoles () {
     if (err) {
       console.log(err);
     }
+    console.table('==================================================================');
     console.table(row);
+    console.table('==================================================================');
     firstPrompt();
   }) 
 };
-
+// ============================== Function to view employees =========================
 function viewEmployee () {
   const sql = `SELECT * FROM employee`;
     
@@ -112,11 +118,13 @@ function viewEmployee () {
     if (err) {
       console.log(err);
     }
+    console.table('==================================================================');
     console.table(row);
+    console.table('==================================================================');
     firstPrompt();
   }) 
 };
-
+// ============================== Function to add a department =========================
 function addDepartment() {
     prompt([
       {
@@ -132,12 +140,14 @@ function addDepartment() {
         if (err) {
           console.log(err);
     }
+    console.table('==================================================================');
     console.table("\nDepartment added to database!\n")
+    console.table('==================================================================');
     appStart();
       });
     })
     };
-
+// ============================== Function to add a role =========================
     function addRole() {
       let departments = [];
       const sql = `SELECT name, id FROM department;`;
@@ -171,14 +181,16 @@ function addDepartment() {
             if (err) {
               console.log(err);
         }
+        console.table('==================================================================');
         console.table("\nRole added to database!\n")
+        console.table('==================================================================');
         appStart();
           });
         })
         })
       };
 
-
+// ============================== Function to add an employee =========================
 function addEmployee() {
   let roles = [];
   let managers = [];
@@ -224,7 +236,9 @@ function addEmployee() {
         if (err) {
           console.log(err);
     }
+    console.table('==================================================================');
     console.table("\nEmployee added to database!\n")
+    console.table('==================================================================');
     appStart();
       });
     })
@@ -232,6 +246,7 @@ function addEmployee() {
   });
 }
 
+// ============================== Function to update an employee =========================
 function updateEmployee() {
   let roles = [];
   let employees = [];
@@ -267,7 +282,9 @@ function updateEmployee() {
         if (err) {
           console.log(err);
     }
+    console.table('==================================================================');
     console.table("\nUpdated employee in the database!\n")
+    console.table('==================================================================');
     appStart();
       });
     })
@@ -277,5 +294,5 @@ function updateEmployee() {
 
 
 
-
+// start the app
 appStart();
