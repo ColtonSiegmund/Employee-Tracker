@@ -138,6 +138,46 @@ function addDepartment() {
     })
     };
 
+    function addRole() {
+      let departments = [];
+      const sql = `SELECT name, id FROM department;`;
+      db.query(sql, (err, row) => {
+        departments = row.map(({name, id}) => {
+          return { name: name, value: id};
+        })
+    
+        prompt([
+          {
+            type: 'input',
+            name: 'title',
+            message: 'What is the name of the role?'
+          },
+          {
+            type: 'input',
+            name: 'salary',
+            message: 'What is the salary for the role?'
+          },
+          {
+            type: 'list',
+            name: 'department',
+            message: 'What department does the role belong to?',
+            choices: departments
+          }
+        ])
+        .then (answer => {
+          const params = [answer.title, answer.salary, answer.department];
+          const sql3 = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
+          db.query(sql3, params, (err, row) => {
+            if (err) {
+              console.log(err);
+        }
+        console.table("\nRole added to database!\n")
+        appStart();
+          });
+        })
+        })
+      };
+
 
 function addEmployee() {
   let roles = [];
@@ -149,8 +189,8 @@ function addEmployee() {
     })
     const sql2 = `SELECT * FROM employee WHERE manager_id IS NOT NULL;`;
     db.query(sql2, (err, row) => {
-      managers = row.map(({id, first_name}) => {
-        return { name: first_name, value: id };
+      managers = row.map(({manager_id, first_name}) => {
+        return { name: first_name, value: manager_id };
       })
     managers.push("None");
 
