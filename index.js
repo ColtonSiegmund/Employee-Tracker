@@ -192,7 +192,6 @@ function addEmployee() {
       managers = row.map(({manager_id, first_name}) => {
         return { name: first_name, value: manager_id };
       })
-    managers.push("None");
 
     prompt([
       {
@@ -226,6 +225,49 @@ function addEmployee() {
           console.log(err);
     }
     console.table("\nEmployee added to database!\n")
+    appStart();
+      });
+    })
+    })
+  });
+}
+
+function updateEmployee() {
+  let roles = [];
+  let employees = [];
+  const sql = `SELECT role.id, role.title FROM role;`;
+  db.query(sql, (err, row) => {
+    roles = row.map(({id, title}) => {
+      return { name: title, value: id};
+    })
+    const sql2 = `SELECT * FROM employee;`;
+    db.query(sql2, (err, row) => {
+      employees = row.map(({first_name, last_name, id}) => {
+        return { name: first_name + last_name, value: id };
+      })
+
+    prompt([
+      {
+        type: 'list',
+        name: 'first_name',
+        message: "Which employee's role would you like to update?",
+        choices: employees
+      },
+      {
+        type: 'list',
+        name: 'role_id',
+        message: 'What role would you like to assign to the employee?',
+        choices: roles
+      }
+    ])
+    .then (answer => {
+      const params = [answer.role_id, answer.first_name];
+      const sql3 = `UPDATE employee SET role_id = ? WHERE id = ?`;
+      db.query(sql3, params, (err, row) => {
+        if (err) {
+          console.log(err);
+    }
+    console.table("\nUpdated employee in the database!\n")
     appStart();
       });
     })
