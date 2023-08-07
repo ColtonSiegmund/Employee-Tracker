@@ -17,6 +17,7 @@
   - [Questions](#questions)
 
   ## Examples
+  [Example Video](https://drive.google.com/file/d/1EXsqa2GPdA-G7wCYBeuo9Na4i15-YfFi/view?pli=1)
 ![Start](./assets/start.png)
 ![Employees](./assets/employees.png)
   ## Installation
